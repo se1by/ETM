@@ -101,19 +101,19 @@ public class Player implements LivingEntity {
 	}
 	
 	private void right() {
-		addPosition(new Vector2i(5,0));
+		addPosition(new Vector2i(1,0));
 	}
 
 	private void left() {
-		addPosition(new Vector2i(-5,0));
+		addPosition(new Vector2i(-1,0));
 	}
 
 	private void down() {
-		addPosition(new Vector2i(0,5));
+		addPosition(new Vector2i(0,1));
 	}
 
 	private void up() {
-		addPosition(new Vector2i(0,-5));
+		addPosition(new Vector2i(0,-1));
 	}
 	
 	private int getTileIDAtPlayerPos(){
@@ -139,6 +139,7 @@ public class Player implements LivingEntity {
 		System.out.println("x: " + x);
 		System.out.println("tw: " + map.getTileWidth());
 		System.out.println("w: " + map.getWidth());
+
 		while(x >= map.getWidth()){
 			x--;
 			System.out.println("new x = " + x);
@@ -149,13 +150,13 @@ public class Player implements LivingEntity {
 		}
 		
 		//lower left
-		if(map.getTileId(getPosition().getX()/map.getTileWidth(), (getPosition().getY() + getImage().getHeight())/map.getTileHeight(), 0) == 1){
+		if(map.getTileId(getPosition().getX()/map.getTileWidth(), (getPosition().getY())/map.getTileHeight(), 0) == 1){
 			System.out.println("by ll");
 			return true;
 		}
 		
 		//lower right
-		if(map.getTileId((getPosition().getX() + getImage().getWidth())/map.getTileWidth(), (getPosition().getY() + getImage().getHeight())/map.getTileHeight(), 0) == 1){
+		if(map.getTileId((getPosition().getX())/map.getTileWidth(), (getPosition().getY() + getImage().getHeight())/map.getTileHeight(), 0) == 1){
 			System.out.println("by lr");
 			return true;
 		}
