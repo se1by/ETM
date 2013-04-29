@@ -1,5 +1,8 @@
 package com.se1by.ETM.Entities;
 
+import java.util.ArrayList;
+
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Image;
@@ -7,6 +10,7 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.tiled.TiledMap;
 
+import com.se1by.ETM.Levels.BaseLevel;
 import com.se1by.ETM.util.Vector2i;
 
 
@@ -15,9 +19,17 @@ public class Player implements LivingEntity {
 	Vector2i pos;
 	Image image;
 	TiledMap map; //FUCKING DAMN UGLY WAY BUT SHOULD DO THE TRICK
+	BaseLevel level;
+	int speed;
+	public ArrayList<Integer> toRender;
+	public boolean hit;
+	int hitCD;
+	float health;
 	
-	public Player(TiledMap map){
-		this.map = map;
+	public Player(BaseLevel level, Vector2i pos){
+		this.map = level.getMap();
+		this.level = level;
+		setPosition(pos);
 	}
 
 	@Override
@@ -47,7 +59,25 @@ public class Player implements LivingEntity {
 
 	@Override
 	public void render(GameContainer con, Graphics g) throws SlickException {
-		g.drawImage(image, pos.getX(), pos.getY());
+		if(hit){
+			g.drawImage(getImage(), getPosition().getX(), getPosition().getY(), Color.red);
+		}
+		else{
+			g.drawImage(image, pos.getX(), pos.getY());
+		}
+		
+		//HEALTH DRAWING, SOMEHOW NOT WORKING
+		int i = 0;
+		float hc = health;
+		Image full = new Image("res/live.png");
+		while(hc > 1){
+			g.drawImage(full, 20 + i*full.getWidth(), 780, Color.red);
+			hc--;
+			i++;
+		}
+		if(hc > 0){
+			g.drawImage(new Image("res/live2.png"), 20 + i*full.getWidth(), 780);
+		}
 	}
 
 	@Override
@@ -57,16 +87,16 @@ public class Player implements LivingEntity {
 		//INPUT
 		Input input = con.getInput();
 		
-		if(input.isKeyDown(Input.KEY_W)){
+		if(input.isKeyDown(Input.KEY_W) || input.isKeyDown(Input.KEY_UP)){
 			up();
 		}
-		if(input.isKeyDown(Input.KEY_S)){
+		if(input.isKeyDown(Input.KEY_S) || input.isKeyDown(Input.KEY_DOWN)){
 			down();
 		}
-		if(input.isKeyDown(Input.KEY_A)){
+		if(input.isKeyDown(Input.KEY_A) || input.isKeyDown(Input.KEY_LEFT)){
 			left();
 		}
-		if(input.isKeyDown(Input.KEY_D)){
+		if(input.isKeyDown(Input.KEY_D) || input.isKeyDown(Input.KEY_RIGHT)){
 			right();
 		}
 		
@@ -85,11 +115,26 @@ public class Player implements LivingEntity {
 		}
 		
 		//WALL/TERRAIN COLLISION
-		if(inBlocked()){
-			
-			
-			setPosition(oldTilePos.multiply(map.getTileWidth(), map.getTileHeight()));
-			System.out.println("blocked");
+		for(int i = 0; i < level.getLayers(); i++){
+			for(int x : level.getBlockedID()){
+				if(inBlocked(i, x)){
+					setPosition(oldTilePos.multiply(map.getTileWidth(), map.getTileHeight()));
+					toRender.add(i);
+				}
+			}
+		}
+		
+		//FINISHED?
+		if(inBlocked(level.getLayers()-1, level.getFinishID())){
+			level.setFinished(true);
+		}
+		
+		//HIT COOLDOWN
+		if(hit){
+			hitCD += delta;
+			if(hitCD > 100){
+				hit = false;
+			}
 		}
 		
 	}
@@ -97,25 +142,30 @@ public class Player implements LivingEntity {
 	@Override
 	public void init(GameContainer con) throws SlickException {
 		setImage(new Image("res/player.png"));
-		setPosition(new Vector2i(50,50));
+		toRender = new ArrayList<Integer>();
+		toRender.add(level.getLayers() - 1);
+		speed = 8;
+		hit = false;
+		health = 3;
 	}
 	
 	private void right() {
-		addPosition(new Vector2i(1,0));
+		addPosition(new Vector2i(speed,0));
 	}
 
 	private void left() {
-		addPosition(new Vector2i(-1,0));
+		addPosition(new Vector2i(-speed,0));
 	}
 
 	private void down() {
-		addPosition(new Vector2i(0,1));
+		addPosition(new Vector2i(0,speed));
 	}
 
 	private void up() {
-		addPosition(new Vector2i(0,-1));
+		addPosition(new Vector2i(0,-speed));
 	}
 	
+	@SuppressWarnings("unused")
 	private int getTileIDAtPlayerPos(){
 		return map.getTileId(getPosition().getX()/map.getTileWidth(), getPosition().getY()/map.getTileHeight(), 0);
 	}
@@ -127,37 +177,26 @@ public class Player implements LivingEntity {
 		return new Vector2i(x, y);
 	}
 	
-	private boolean inBlocked(){
+	private boolean inBlocked(int layer, int blockID){
 		//upper left
-		if(getTileIDAtPlayerPos() == 1){
-			System.out.println("by ul");
+		if(map.getTileId(getPosition().getX()/map.getTileWidth(), getPosition().getY()/map.getTileHeight(), layer) == blockID){
 			return true;
 		}
 		
 		//upper right
-		int x = (getPosition().getX() + getImage().getWidth())/map.getTileWidth();
-		System.out.println("x: " + x);
-		System.out.println("tw: " + map.getTileWidth());
-		System.out.println("w: " + map.getWidth());
+		int x = (getPosition().getX() + getImage().getWidth() - 1)/map.getTileWidth();
 
-		while(x >= map.getWidth()){
-			x--;
-			System.out.println("new x = " + x);
-		}
-		if(map.getTileId(x, getPosition().getY()/map.getTileHeight() , 0) == 1){
-			System.out.println("by ur");
+		if(map.getTileId(x, getPosition().getY()/map.getTileHeight() , layer) == blockID){
 			return true;
 		}
 		
 		//lower left
-		if(map.getTileId(getPosition().getX()/map.getTileWidth(), (getPosition().getY())/map.getTileHeight(), 0) == 1){
-			System.out.println("by ll");
+		if(map.getTileId(getPosition().getX()/map.getTileWidth(), (getPosition().getY() + image.getHeight() -1)/map.getTileHeight(), layer) == blockID){
 			return true;
 		}
 		
 		//lower right
-		if(map.getTileId((getPosition().getX())/map.getTileWidth(), (getPosition().getY() + getImage().getHeight())/map.getTileHeight(), 0) == 1){
-			System.out.println("by lr");
+		if(map.getTileId((getPosition().getX() + getImage().getWidth() -1)/map.getTileWidth(), (getPosition().getY() + getImage().getHeight() - 1)/map.getTileHeight(), layer) == blockID){
 			return true;
 		}
 		

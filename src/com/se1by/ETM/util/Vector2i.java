@@ -43,5 +43,13 @@ public class Vector2i {
 		return vec;
 	}
 	
+	public String toString(){
+		return "X=" + getX() + "|Y=" + getY();
+	}
+	
+	public Vector2i copy(){
+		return new Vector2i(getX(), getY());
+	}
+	
 
 }

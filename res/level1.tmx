@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" width="25" height="20" tilewidth="32" tileheight="30">
  <tileset firstgid="1" name="Tiles" tilewidth="32" tileheight="30">
-  <image source="wall.png" width="32" height="60"/>
+  <image source="wall.png" width="32" height="90"/>
   <tile id="0">
    <properties>
     <property name="blocked" value="true"/>
@@ -9,9 +9,34 @@
    </properties>
   </tile>
  </tileset>
+ <layer name="Kachelebene 6" width="25" height="20">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgGAX4AOOoHSPKDkY62UFrMGrH4LNjOPllqNsxXPM5ACiHDRbQBwAA
+  </data>
+ </layer>
+ <layer name="Kachelebene 5" width="25" height="20">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgoBwwQjEtwagdo3aM2jH87RhOgB5hNRzifNQO6tkBAHyCXDTQBwAA
+  </data>
+ </layer>
+ <layer name="Kachelebene 4" width="25" height="20">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgIA0wImFag1E7Ru2gttm0TrujeWPUjqFsxyggHgzGOAcATv1sktAHAAA=
+  </data>
+ </layer>
+ <layer name="Kachelebene 3" width="25" height="20">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NgGAXUAoyjdpBkx3DwCz38MRzCCWbHcPLLULdjNO0OPzsAkpcw4dAHAAA=
+  </data>
+ </layer>
+ <layer name="Kachelebene 2" width="25" height="20">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAC2NkYGBgRMO0BqN2jNoxaseoHaOAvmC4xPmoHbgBAM5QlyTQBwAA
+  </data>
+ </layer>
  <layer name="Kachelebene 1" width="25" height="20">
   <data encoding="base64" compression="gzip">
-   H4sIAAAAAAAAC+2UyxIAIARF6f8/ur0RLpVppoVVl5MnExELG4ZpuoifjIHquhhWnKj2M3Stpt/JWMWzGN6ceXms/iw1yOx6eb3EQPoZec/mdoNRuV+VHlX6ofmcuCXdjMyeo/Xs2MEJFDeUoNAHAAA=
+   H4sIAAAAAAAAC2NiYGBgGsWjeBSP4lE8ikcx1TEzFNPDDgC8DYKH0AcAAA==
   </data>
  </layer>
 </map>

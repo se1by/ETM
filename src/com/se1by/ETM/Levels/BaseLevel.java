@@ -1,5 +1,7 @@
 package com.se1by.ETM.Levels;
 
+import java.util.ArrayList;
+
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -17,4 +19,8 @@ public interface BaseLevel {
 	public void render(GameContainer con, Graphics g) throws SlickException;
 	public void update(GameContainer con, int delta) throws SlickException;
 	public boolean isFinished();
+	public void setFinished(boolean finished);
+	public int getLayers();
+	public ArrayList<Integer> getBlockedID();
+	public int getFinishID();
 }
