@@ -165,5 +165,4 @@ public class Level2 implements BaseLevel {
 	public CutScene getCutScene() {
 		return scene;
 	}
-
 }

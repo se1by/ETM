@@ -108,7 +108,7 @@ public class Level1 implements BaseLevel{
 	public int getFinishID() {
 		return 3;
 	}
-
+	
 	@Override
 	public int getScore() {
 		return score;
