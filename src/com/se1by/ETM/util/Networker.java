@@ -27,6 +27,9 @@ public class Networker {
 	}
 	
 	public boolean addScore(String user, int score){
+		if(score < 0){
+			return false;
+		}
 		try {
 			String toSend = "Entry:" + user + ":" + score + "\n";
 			bw.write(toSend);
