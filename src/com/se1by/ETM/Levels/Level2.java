@@ -12,6 +12,7 @@ import org.newdawn.slick.tiled.TiledMapPlus;
 import com.se1by.ETM.Entities.Player;
 import com.se1by.ETM.Entities.Turret;
 import com.se1by.ETM.GameStates.CutScene;
+import com.se1by.ETM.GameStates.Ingame;
 import com.se1by.ETM.util.Vector2i;
 
 public class Level2 implements BaseLevel {
@@ -60,6 +61,9 @@ public class Level2 implements BaseLevel {
 		score = 1000;
 		punishment = 50;
 		
+		scene = new CutScene(this);
+		scene.init(con);
+		
 		//SETUP TURRETS
 		turrets = new ArrayList<Turret>();
 		TiledMapPlus tmp = (TiledMapPlus)map;
@@ -78,6 +82,11 @@ public class Level2 implements BaseLevel {
 
 	@Override
 	public void render(GameContainer con, Graphics g) throws SlickException {
+		if(getFinished()){
+			scene.score = score;
+			scene.render(con, g);
+			return;
+		}
 		for(int i : player.toRender){
 			map.render(0, 0, i);
 		}
@@ -90,6 +99,10 @@ public class Level2 implements BaseLevel {
 
 	@Override
 	public void update(GameContainer con, int delta) throws SlickException {
+		if(getFinished()){
+			scene.update(con, delta);
+			return;
+		}
 		player.update(con, delta);
 		for(Turret t : turrets){
 			t.update(con, delta);
@@ -103,12 +116,13 @@ public class Level2 implements BaseLevel {
 
 	@Override
 	public boolean isFinished() {
-		return nextLevel;
+		return finished;
 	}
 
 	@Override
 	public void setFinished(boolean finished) {
 		this.finished = finished;
+		Ingame.score += getScore();
 	}
 
 	@Override

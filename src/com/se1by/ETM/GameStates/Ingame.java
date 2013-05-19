@@ -16,6 +16,7 @@ import com.se1by.ETM.Levels.Level2;
 import com.se1by.ETM.util.Vector2i;
 
 public class Ingame implements BaseState {
+	public static int score = 10;
 	Player player;
 	ArrayList<BaseLevel> levels;
 	int counter;
@@ -53,11 +54,11 @@ public class Ingame implements BaseState {
 			ETM.state = GameState.PAUSED;
 		}
 		
-		if(levels.get(counter).isFinished()){
+		if(levels.get(counter).getNextLevel()){
 			//System.out.println("Counter:" + counter + "\nlevels.size:" + levels.size() + "\ncurrent level: level" + (counter+1));
 			counter++;
 			if(counter == levels.size()){
-				ETM.state = GameState.END;
+				ETM.state = GameState.SUBMIT;
 				return;
 			}
 			levels.get(counter).init(con);

@@ -11,7 +11,9 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
 import org.newdawn.slick.tiled.TiledMap;
 
+import com.se1by.ETM.ETM;
 import com.se1by.ETM.Levels.BaseLevel;
+import com.se1by.ETM.Levels.Level1;
 import com.se1by.ETM.util.Vector2i;
 
 
@@ -27,17 +29,20 @@ public class Player implements LivingEntity {
 	int hitCD;
 	float health;
 	Sound hitSound;
-	private int wasBlocked;
+	private boolean wasBlocked;
+	int hitWall;
 	
 	public Player(BaseLevel level, Vector2i pos){
 		this.map = level.getMap();
 		this.level = level;
-		setPosition(pos);
+		this.pos = pos;
 	}
 
 	@Override
 	public void setPosition(Vector2i pos) {
-		this.pos = pos;
+		if(!outOfScreen(pos) && !inBlocked(pos)){			
+			this.pos = pos;
+		}
 	}
 
 	@Override
@@ -47,7 +52,9 @@ public class Player implements LivingEntity {
 	
 	@Override
 	public void addPosition(Vector2i vec) {
-		pos.add(vec);
+		if(!outOfScreen(pos.copy().add(vec)) && !inBlocked(pos.copy().add(vec))){
+			pos.add(vec);
+		}
 	}
 
 	@Override
@@ -70,6 +77,7 @@ public class Player implements LivingEntity {
 		}
 		
 		//HEALTH DRAWING, SOMEHOW NOT WORKING
+		/*
 		int i = 0;
 		float hc = health;
 		Image full = new Image("res/live.png");
@@ -81,6 +89,7 @@ public class Player implements LivingEntity {
 		if(hc > 0){
 			g.drawImage(new Image("res/live2.png"), 20 + i*full.getWidth(), 780);
 		}
+		*/
 	}
 
 	@Override
@@ -117,20 +126,32 @@ public class Player implements LivingEntity {
 			setPosition(new Vector2i(pos.getX(), 0));
 		}
 		
-		//WALL/TERRAIN COLLISION
-		for(int i = 0; i < level.getLayers(); i++){
-			for(int x : level.getBlockedID()){
-				if(inBlocked(i, x)){
-					setPosition(oldTilePos.multiply(map.getTileWidth(), map.getTileHeight()));
-					toRender.add(i);
-					hitSound.play();
+		//WALL/TERRAIN COLLISION is now done in the "addPosition" and "setPosition" method
+		//THIS IS JUST TO LIGHT UP THE WALLS, I KNOW IT'S NOT THE PERFECT SOLUTION
+		if(level instanceof Level1){
+			for (int i = 0; i < level.getLayers(); i++) {
+				if (inBlocked(i, getPosition())) {
+					if (!wasBlocked) {
+						wasBlocked = true;
+						toRender.add(i);
+						hitSound.play();
+					}
+					setPosition(oldTilePos.multiply(map.getTileWidth(),
+							map.getTileHeight()));
 				}
 			}
 		}
 		
+		if(hitWall != -1 && !toRender.contains(hitWall) && level instanceof Level1){
+			System.out.println("ADD");
+			toRender.add(hitWall);
+		}
+		
 		//FINISHED?
-		if(inBlocked(level.getLayers()-1, level.getFinishID())){
-			level.setFinished(true);
+		for(int i = 0; i < level.getLayers(); i++){
+			if(inID(i, level.getFinishID(), getPosition())){
+				level.setFinished(true);
+			}
 		}
 		
 		//HIT COOLDOWN
@@ -152,6 +173,7 @@ public class Player implements LivingEntity {
 		hit = false;
 		health = 3;
 		hitSound = new Sound("res/hit.ogg");
+		hitWall = -1;
 	}
 	
 	private void right() {
@@ -182,29 +204,81 @@ public class Player implements LivingEntity {
 		return new Vector2i(x, y);
 	}
 	
-	private boolean inBlocked(int layer, int blockID){
+	private boolean inBlocked(int layer, Vector2i position){
 		//upper left
-		if(map.getTileId(getPosition().getX()/map.getTileWidth(), getPosition().getY()/map.getTileHeight(), layer) == blockID){
+		int topLeftID = map.getTileId(position.getX()/map.getTileWidth(), position.getY()/map.getTileHeight(), layer);
+		int topRightID = map.getTileId((position.getX() + getImage().getWidth() - 1)/map.getTileWidth(), position.getY()/map.getTileHeight() , layer);
+		int downLeftID = map.getTileId(position.getX()/map.getTileWidth(), (position.getY() + image.getHeight() -1)/map.getTileHeight(), layer);
+		int downRightID = map.getTileId((position.getX() + getImage().getWidth() -1)/map.getTileWidth(), (position.getY() + getImage().getHeight() - 1)/map.getTileHeight(), layer);
+		
+		if(level.getBlockedID().contains(topLeftID)){
+			return true;
+		}
+		else if(level.getBlockedID().contains(topRightID)){
+			return true;
+		}
+		else if(level.getBlockedID().contains(downLeftID)){
+			return true;
+		}
+		else if(level.getBlockedID().contains(downRightID)){
 			return true;
 		}
 		
-		//upper right
-		int x = (getPosition().getX() + getImage().getWidth() - 1)/map.getTileWidth();
-
-		if(map.getTileId(x, getPosition().getY()/map.getTileHeight() , layer) == blockID){
+		return false;
+	}
+	
+	private boolean inID(int layer, int ID, Vector2i position){
+		int topLeftID = map.getTileId(position.getX()/map.getTileWidth(), position.getY()/map.getTileHeight(), layer);
+		int topRightID = map.getTileId((position.getX() + getImage().getWidth() - 1)/map.getTileWidth(), position.getY()/map.getTileHeight() , layer);
+		int downLeftID = map.getTileId(position.getX()/map.getTileWidth(), (position.getY() + image.getHeight() -1)/map.getTileHeight(), layer);
+		int downRightID = map.getTileId((position.getX() + getImage().getWidth() -1)/map.getTileWidth(), (position.getY() + getImage().getHeight() - 1)/map.getTileHeight(), layer);
+		
+		if(topLeftID == ID){
 			return true;
 		}
-		
-		//lower left
-		if(map.getTileId(getPosition().getX()/map.getTileWidth(), (getPosition().getY() + image.getHeight() -1)/map.getTileHeight(), layer) == blockID){
+		else if(topRightID == ID){
 			return true;
 		}
-		
-		//lower right
-		if(map.getTileId((getPosition().getX() + getImage().getWidth() -1)/map.getTileWidth(), (getPosition().getY() + getImage().getHeight() - 1)/map.getTileHeight(), layer) == blockID){
+		else if(downLeftID == ID){
 			return true;
 		}
-		
+		else if(downRightID == ID){
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean inBlocked(Vector2i position){
+		for(int i = 0; i < level.getLayers(); i++){
+			if(inBlocked(i, position)){
+				hitWall = i;
+				if(!wasBlocked){
+					level.setScore(level.getScore() - level.getPunishment());
+					hitSound.play();
+					System.out.println("score-=" + level.getPunishment());
+				}
+				wasBlocked = true;
+				return true;
+			}
+		}
+		wasBlocked = false;
+		hitWall = -1;
+		return false;
+	}
+	
+	private boolean outOfScreen(Vector2i position){
+		if(position.getX() + image.getWidth() > ETM.width){
+			return true;
+		}
+		else if(position.getX() < 0){
+			return true;
+		}
+		if(position.getY() + image.getHeight() > ETM.height){
+			return true;
+		}
+		else if(position.getY() < 0){
+			return true;
+		}
 		return false;
 	}
 

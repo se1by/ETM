@@ -9,6 +9,7 @@ import org.newdawn.slick.tiled.TiledMap;
 
 import com.se1by.ETM.Entities.Player;
 import com.se1by.ETM.GameStates.CutScene;
+import com.se1by.ETM.GameStates.Ingame;
 import com.se1by.ETM.util.Vector2i;
 
 public class Level1 implements BaseLevel{
@@ -45,12 +46,13 @@ public class Level1 implements BaseLevel{
 
 	@Override
 	public boolean isFinished() {
-		return nextLevel;
+		return finished;
 	}
 	
 	@Override
 	public void setFinished(boolean finished) {
 		this.finished = finished;
+		Ingame.score += score;
 	}
 	
 	@Override
@@ -62,6 +64,7 @@ public class Level1 implements BaseLevel{
 		blockedID = new ArrayList<Integer>();
 		blockedID.add(1);
 		score = 1000;
+		punishment = 50;
 		
 		scene = new CutScene(this);
 		scene.init(con);
@@ -133,6 +136,7 @@ public class Level1 implements BaseLevel{
 	public boolean getNextLevel() {
 		return nextLevel;
 	}
+	
 
 	@Override
 	public boolean getFinished() {

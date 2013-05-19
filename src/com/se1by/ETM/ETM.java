@@ -16,16 +16,21 @@ import com.se1by.ETM.GameStates.HighScore;
 import com.se1by.ETM.GameStates.Ingame;
 import com.se1by.ETM.GameStates.Menu;
 import com.se1by.ETM.GameStates.Paused;
+import com.se1by.ETM.GameStates.Submit;
 
 public class ETM extends BasicGame {
 	
 	public static GameState state;
 	Menu menu;
-	Ingame ingame;
-	Paused paused;
-	HighScore hs;
+	static Ingame ingame;
+	static Paused paused;
+	static HighScore hs;
 	Credits credits;
 	End end;
+	static Submit submit;
+	
+	public static int width;
+	public static int height;
 
 	public ETM() {
 		super("Escape the minimalism");
@@ -52,22 +57,30 @@ public class ETM extends BasicGame {
 		else if(state.equals(GameState.END)){
 			end.render(container, g);
 		}
+		else if(state.equals(GameState.SUBMIT)){
+			submit.render(container, g);
+		}
 	}
 
 	@Override
 	public void init(GameContainer container) throws SlickException {
+		width = container.getWidth();
+		height = container.getHeight();
+		
 		menu = new Menu();
 		ingame = new Ingame();
 		paused = new Paused();
 		hs = new HighScore();
 		credits = new Credits();
 		end = new End();
+		submit = new Submit();
 		menu.init(container);
 		ingame.init(container);
 		paused.init(container);
 		hs.init(container);
 		credits.init(container);
 		end.init(container);
+		submit.init(container);
 		state = GameState.MENU;
 	}
 
@@ -92,9 +105,23 @@ public class ETM extends BasicGame {
 		else if(state.equals(GameState.END)){
 			end.update(container, delta);
 		}
+		else if(state.equals(GameState.SUBMIT)){
+			submit.update(container, delta);
+		}
 		else if(state.equals(GameState.EXIT)){
 			System.exit(0);
 		}
+	}
+	
+	public static void reload(GameContainer container) throws SlickException{
+		ingame = new Ingame();
+		hs = new HighScore();
+		submit = new Submit();
+		ingame.init(container);
+		paused.init(container);
+		hs.init(container);
+		submit.init(container);
+		state = GameState.MENU;
 	}
 
 	public static void main(String[] args) throws SlickException {
