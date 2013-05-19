@@ -13,6 +13,7 @@ public class Networker {
 	Socket socket;
 	BufferedWriter bw;
 	BufferedReader br;
+	String toThe1337h4x0rs = "I know, you can fuck my highscores up. But this is a LD game, please keep the spirit ;)";
 	
 	public Networker(){
 		try {
