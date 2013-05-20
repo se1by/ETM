@@ -34,7 +34,6 @@ public class Networker {
 			String toSend = "Entry:" + user + ":" + score + "\n";
 			bw.write(toSend);
 			bw.flush();
-			System.out.println("Score sent!\ntoSend=" + toSend);
 			String s;
 			while((s = br.readLine()) != null){
 				if(s.startsWith("Done")){
@@ -79,10 +78,8 @@ public class Networker {
 			String s;
 			s = br.readLine();
 			results = new LinkedHashMap<String, Integer>();
-			System.out.println(s);
 			for(String split : s.split(";")){
 				results.put(split.split(":")[0], Integer.parseInt(split.split(":")[1]));
-				System.out.println("Split = " + split);
 			}
 		} catch (IOException e) {
 			System.out.println("Error initializing the BufferedWriter/BufferedReader!");

@@ -1,6 +1,7 @@
 package com.se1by.ETM.GameStates;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.newdawn.slick.AngelCodeFont;
 import org.newdawn.slick.Color;
@@ -37,7 +38,7 @@ public class Submit implements BaseState {
 		net = new Networker();
 		con.getInput().addKeyListener(new KeyListener() {
 			
-			boolean isPressed;
+			HashMap<Integer, Boolean> isPressed = new HashMap<Integer, Boolean>();
 			
 			@Override
 			public void setInput(Input input) {
@@ -67,16 +68,14 @@ public class Submit implements BaseState {
 			
 			@Override
 			public void keyReleased(int key, char c) {
-				isPressed = false;
-				System.out.println("released");
+				isPressed.put(key, false);
 			}
 			
 			@Override
 			public void keyPressed(int key, char c) {
-				if(isPressed){
+				if(isPressed.get(key)){
 					return;
 				}
-				System.out.println("char c = " + c);
 				if(key == 14 && name.size() > 0){
 					name.remove(name.size()-1);
 				}
@@ -85,7 +84,7 @@ public class Submit implements BaseState {
 					name.add(c);
 				}
 				if(key != 42){
-					isPressed = true;					
+					isPressed.put(key, true);					
 				}
 			}
 		});

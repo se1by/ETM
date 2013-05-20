@@ -18,8 +18,8 @@ public class End implements BaseState {
 	public void render(GameContainer con, Graphics g) throws SlickException {
 		titleFont.drawString(250, 50, "You did it!", Color.black);
 		font.drawString(320, 100, "(For now!)", Color.black);
-		font.drawString(150, 150, "This is v1.0 postcompo.", Color.black);
-		font.drawString(120, 200, "More stuff coming soon!", Color.black);
+		font.drawString(220, 150, "This is v1.0 postcompo.", Color.black);
+		font.drawString(200, 200, "More stuff coming soon!", Color.black);
 		font.drawString(250, 250, "Just wait for it ;)", Color.black);
 		font.drawString(50, 400, "Follow us on twitter to stay informed:", Color.black);
 		font.drawString(250, 450, "@BitByterStudios");
